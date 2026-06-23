@@ -103,21 +103,29 @@ Main file:
 
 - `characters/npcs/terraworm/TerraWorm.gd`
 
-## Validation Notes
+## Dialogue Export Fixes
 
-Most script changes were checked by loading relevant scenes headlessly with Godot 3.4.2:
+- Fixed exported builds freezing the player when dialogue failed to open by returning the player to normal state if a conversation cannot be loaded.
+- Added dialogue path fallback support for both `res://dialog/...` and legacy `res://old_dialog/...` conversation files.
+- Added missing-dialog diagnostics so exported builds report whether the expected dialogue directories/files are present in the packaged `.pck`.
+- Added an export verification script for checking that required dialogue JSON files were packed.
+- Export presets should include dialogue JSON files through Godot's non-resource include filter.
 
-- `characters/player/Player.tscn`
-- `characters/npcs/soldier/Soldier.tscn`
-- `items/weapons/BullpupSmg.tscn`
-- `items/weapons/MilitaryGrenadeLauncher.tscn`
-- `items/weapons/projectiles/Grenade.tscn`
-- `levels/TerraWormBossFight.tscn`
+Main files:
 
-The Steam GDNative warning is currently expected in this workspace:
+- `characters/player/Player.gd`
+- `characters/player/dialog_manager/DialogManager.gd`
+- `tools/verify_export_dialogs.ps1`
 
-```text
-Can't open dynamic library: res://addons/steam_api/steamsdk-godot.dll
-```
+## Steam DLL Removal
 
-This is separate from the gameplay/script fixes above.
+- Removed the native Steam autoload from this patch build so exported builds do not require Steamworks DLL files.
+- Added a no-op Steam singleton stub so achievement calls remain safe without loading the Steam GDNative addon.
+- Removed Windows Steam DLL export entries from the Steam GDNative library config.
+- Steam achievements and leaderboards are disabled in this patch build; local achievement storage remains available through the existing fallback path.
+
+Main files:
+
+- `project.godot`
+- `singletons/SteamStub.gd`
+- `addons/steam_api/steam_api.gdnlib`
