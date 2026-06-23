@@ -1,6 +1,8 @@
-# Modded Flesh Changes
+# Modded Flesh
 
 This project is a decompiled/rebuilt Godot 3.4.2 version of the game with local gameplay, bug-fix, and performance changes.
+***
+# Changes:
 
 ## Player Third-Person Arms
 
