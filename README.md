@@ -1,6 +1,13 @@
 # Modded Flesh
 
 This project is a decompiled/rebuilt Godot 3.4.2 version of the game with local gameplay, bug-fix, and performance changes.
+
+## Distribution
+
+This mod is intended to be installed with WroughtFleshPatcher:
+
+https://github.com/bbrodo/WroughtFleshPatcher
+
 ***
 # Changes:
 
