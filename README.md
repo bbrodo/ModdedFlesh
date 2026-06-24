@@ -4,6 +4,10 @@ This repository contains the public Modded Flesh patch package for Wrought Flesh
 
 It does not include the full game, original game files, or a standalone playable build.
 
+## Aim
+
+This mod aims to fix bugs, crashes and performance issues introduced in the Purple Sands of Cumulun update and return the game to a playable state.
+
 ## Distribution
 
 Install this patch with WroughtFleshPatcher:
