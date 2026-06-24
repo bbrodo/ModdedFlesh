@@ -22,6 +22,7 @@ WroughtFleshPatcher applies the xdelta patch to the user's existing installed co
 ## Player Third-Person Arms
 
 - Fixed first-person arm/body visibility when switching between first-person and third-person views.
+- Fixed third-person permanently offsetting aim to the right in first-person.
 - Added a deferred third-person arm IK refresh when entering third person so saved/new-game player initialization does not leave shoulders or arms in a bad pose.
 - Restored the no-weapon third-person arm IK/finger-gun style hand pose path without letting it permanently offset shoulders.
 - Fixed held/eatable bodies disappearing in third person by keeping carried body visibility separate from first-person arm hiding.
