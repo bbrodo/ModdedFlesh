@@ -52,6 +52,8 @@ Main files:
 - Fixed ally alert propagation so nearby active NPCs are found by group lookup instead of relying only on stale physics-query caches.
 - Added support for waking nearby inactive NPCs through their activator triggers when an ally alert is broadcast.
 - Prevented ally alerts from rebroadcasting recursively, avoiding frame spikes when one NPC alerts a group.
+- Increased ally alert and player gunfire alert radii so nearby enemies join ongoing fights more reliably.
+- Fixed NPC vision LOS checks to start from eye height and ignore the NPC's own body/hitboxes, improving Pollop/Wizard and general NPC detection.
 
 Main files:
 
@@ -61,6 +63,8 @@ Main files:
 - `characters/npcs/blob/Blob.gd`
 - `characters/npcs/nautilus/Nautilus.gd`
 - `characters/npcs/soldier/Soldier.gd`
+- `characters/VisionManager.gd`
+- `characters/player/Player.tscn`
 - `characters/PredictiveAimLogic.gd`
 - `items/weapons/bullet_emitters/BulletEmitter.gd`
 - `items/weapons/bullet_emitters/BurstEmitter.gd`

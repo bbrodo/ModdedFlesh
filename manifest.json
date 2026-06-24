@@ -1,10 +1,10 @@
 {
-  "name": "ModdedFlesh v0.1.4",
+  "name": "ModdedFlesh v0.1.5",
   "steam_app_id": 1762010,
   "steam_install_dir": "Wrought Flesh",
   "target_file": "WroughtFlesh.pck",
   "original_sha256": "27a4669143da29c067aea0bd37e7f17293bf4ee8acff81a5e6dc00cf55ffaab8",
-  "patched_sha256": "3cf9634d49c58d838b815c578e7c906998d87a99056d5ef28e606b4195f33b5c",
-  "patch_file": "ModdedFleshv0.1.4.xdelta",
+  "patched_sha256": "6591ff2df7f03f75a41549a0b81316ea0f1d7af4f2f9dd998eddaef2e6d9bbd5",
+  "patch_file": "ModdedFleshv0.1.5.xdelta",
   "backup_suffix": ".bak"
 }
