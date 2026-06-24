@@ -20,17 +20,17 @@ jobs:
         run: |
           mkdir release
           cp manifest.json release/
-          cp patches/*.xdelta release/
+          cp *.xdelta release/
 
       - name: Zip release files
         run: |
           cd release
-          zip -r "../my-mod-${{ github.ref_name }}.zip" .
+          zip -r "../ModdedFlesh${{ github.ref_name }}.zip" .
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${{ github.ref_name }}" "my-mod-${{ github.ref_name }}.zip" \
+          gh release create "${{ github.ref_name }}" "ModdedFlesh${{ github.ref_name }}.zip" \
             --title "${{ github.ref_name }}" \
             --notes "Automated release for ${{ github.ref_name }}"
