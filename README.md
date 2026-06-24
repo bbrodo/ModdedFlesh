@@ -45,11 +45,17 @@ Main files:
 - Added real bullet pooling for normal bullet projectiles instead of instancing and freeing every bullet.
 - Fixed pooled bullet reset behavior so raycast exceptions, lifespan timers, visibility, and physics state reset correctly.
 - Reduced blob/NPC alert frame spikes by clearing stale ally lists, preventing repeated same-target ally broadcasts, and spreading ally alert propagation across frames.
+- Fixed ally alert propagation so nearby active NPCs are found by group lookup instead of relying only on stale physics-query caches.
+- Added support for waking nearby inactive NPCs through their activator triggers when an ally alert is broadcast.
+- Prevented ally alerts from rebroadcasting recursively, avoiding frame spikes when one NPC alerts a group.
 
 Main files:
 
 - `characters/npcs/NPC.gd`
+- `characters/npcs/NPCActivatorTrigger.gd`
 - `characters/npcs/HumanoidNPC.gd`
+- `characters/npcs/blob/Blob.gd`
+- `characters/npcs/nautilus/Nautilus.gd`
 - `characters/npcs/soldier/Soldier.gd`
 - `characters/PredictiveAimLogic.gd`
 - `items/weapons/bullet_emitters/BulletEmitter.gd`
@@ -93,6 +99,21 @@ Main files:
 
 - `characters/HealthManager.gd`
 - `items/weapons/projectiles/Projectile.gd`
+
+## Grenade Explosion Performance
+
+- Reduced grenade explosion frame spikes by lowering the number of lingering fire areas spawned per explosion.
+- Spread explosion fire placement work across small batches instead of raycasting and spawning every fire in one frame.
+- Added pooling for fire objects so repeated grenade explosions reuse existing fire nodes instead of constantly instancing and freeing them.
+- Added a grenade impact guard so repeated `body_entered` signals cannot re-run the explosion path.
+
+Main files:
+
+- `items/weapons/projectiles/Grenade.gd`
+- `items/weapons/effects/Explosion.gd`
+- `effects/fire/Fire.gd`
+- `effects/fire/Fire.tscn`
+- `singletons/ObjectPoolManager.gd`
 
 ## TerraWorm Fixes
 
