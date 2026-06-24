@@ -129,3 +129,15 @@ Main files:
 - `project.godot`
 - `singletons/SteamStub.gd`
 - `addons/steam_api/steam_api.gdnlib`
+
+## Debug Logging
+
+- Added persistent file logging for exported builds so tester crashes can be investigated after the console closes.
+- Game logger output is written to `user://logs/latest.log`, with the previous run archived as `previous-YYYYMMDD-HHMMSS.log`.
+- Godot engine output is also written to `user://logs/godot.log`.
+- On Windows this uses the shared Wrought Flesh user directory, usually `AppData/Roaming/WroughtFlesh/logs`.
+
+Main files:
+
+- `singletons/log_config.gd`
+- `project.godot`
