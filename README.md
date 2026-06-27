@@ -22,7 +22,6 @@ WroughtFleshPatcher applies the xdelta patch to the user's existing installed co
 ## Player Third-Person Arms
 
 - Fixed first-person arm/body visibility when switching between first-person and third-person views.
-- Fixed third-person permanently offsetting aim to the right in first-person.
 - Added a deferred third-person arm IK refresh when entering third person so saved/new-game player initialization does not leave shoulders or arms in a bad pose.
 - Restored the no-weapon third-person arm IK/finger-gun style hand pose path without letting it permanently offset shoulders.
 - Fixed held/eatable bodies disappearing in third person by keeping carried body visibility separate from first-person arm hiding.
@@ -103,11 +102,23 @@ Main files:
 
 - Added blood decal throttling/chance controls to reduce decal spam and damage-time overhead.
 - Cached filtered projectile collision-exclusion bodies so projectiles do not rebuild that list every movement tick.
+- Added pooling support for shared non-bullet projectile lifecycles so blood and acid projectiles can be reused safely.
+- Added pooling for blood hit effects, bullet hit effects, explosions, lightning effects, acid pools, and fire objects to reduce runtime instancing/freeing spikes.
+- Routed biogun elemental effects, lightning hands, acid projectiles, grenade explosions, homing bullet elemental effects, TerraWorm acid, and missile bug explosions through pooled effect paths where applicable.
 
 Main files:
 
 - `characters/HealthManager.gd`
 - `items/weapons/projectiles/Projectile.gd`
+- `items/weapons/projectiles/BloodProjectile.gd`
+- `items/weapons/projectiles/Acid.gd`
+- `items/weapons/effects/Explosion.gd`
+- `items/weapons/effects/Lightning.gd`
+- `effects/acid_pool/AcidPool.gd`
+- `items/weapons/bullet_emitters/LightningEmitter.gd`
+- `characters/npcs/terraworm/LargeAcidSpawner.gd`
+- `characters/npcs/beetle_bomber/MissileBug.gd`
+- `singletons/ObjectPoolManager.gd`
 
 ## Grenade Explosion Performance
 
@@ -115,6 +126,7 @@ Main files:
 - Spread explosion fire placement work across small batches instead of raycasting and spawning every fire in one frame.
 - Added pooling for fire objects so repeated grenade explosions reuse existing fire nodes instead of constantly instancing and freeing them.
 - Added a grenade impact guard so repeated `body_entered` signals cannot re-run the explosion path.
+- Added pooling for grenade projectiles and grenade explosion effects, including reset handling for timers, visibility, collision, sounds, and motion trails.
 
 Main files:
 
@@ -123,6 +135,17 @@ Main files:
 - `effects/fire/Fire.gd`
 - `effects/fire/Fire.tscn`
 - `singletons/ObjectPoolManager.gd`
+
+## Eating Performance
+
+- Reduced frame spikes while holding or eating corpses by avoiding repeated expensive eat-state work when the player is already at full health or has no digestion.
+- Prevented the eating animation from being restarted every frame while the eat input is held.
+- Guarded bite callbacks so late animation events do not emit healing signals after eating has stopped or health is already full.
+- Made stopping eating idempotent so it no longer replays hold animations or logs every frame when already stopped.
+
+Main file:
+
+- `characters/player/EatManager.gd`
 
 ## TerraWorm Fixes
 
