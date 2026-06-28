@@ -54,6 +54,7 @@ Main files:
 - Prevented ally alerts from rebroadcasting recursively, avoiding frame spikes when one NPC alerts a group.
 - Increased ally alert and player gunfire alert radii so nearby enemies join ongoing fights more reliably.
 - Fixed NPC vision LOS checks to start from eye height and ignore the NPC's own body/hitboxes, improving Pollop/Wizard and general NPC detection.
+- Fixed NPC shotgun bursts sometimes missing completely at close range by adding one guaranteed center pellet to NPC shotgun spread while keeping the rest of the pellets randomized.
 
 Main files:
 
@@ -69,9 +70,28 @@ Main files:
 - `items/weapons/bullet_emitters/BulletEmitter.gd`
 - `items/weapons/bullet_emitters/BurstEmitter.gd`
 - `items/weapons/bullet_emitters/SprayEmitter.gd`
+- `items/weapons/DoubleBarrelShotgun.tscn`
+- `items/weapons/PumpActionShotgun.tscn`
+- `items/weapons/TacticalShotgun.tscn`
 - `items/weapons/projectiles/Bullet.gd`
 - `items/weapons/projectiles/Projectile.gd`
 - `singletons/ObjectPoolManager.gd`
+
+## Graphics And Culling Performance
+
+- Added a static environment culler for medium and small world geometry to reduce draw calls while keeping large distant landmarks visible.
+- Added a dynamic NPC render culler that hides distant non-combat NPC graphics and culls distant NPC shadows while keeping active, alerted, visible, or held NPCs rendered.
+- Added graphics menu checkboxes for enabling/disabling the static environment culler and NPC culler.
+- Set both culler settings to enabled by default for new settings files.
+- Set shadows to off by default for new settings files because shadows have a large performance cost.
+- Restored hidden geometry, NPC graphics, and shadow state when either culler is disabled.
+
+Main files:
+
+- `main_menu/Graphics.gd`
+- `main_menu/SettingsMenu.tscn`
+- `singletons/static_environment_culler.gd`
+- `singletons/dynamic_npc_render_culler.gd`
 
 ## Weapon And Bullet Logging
 
@@ -169,6 +189,14 @@ Main files:
 - `characters/player/Player.gd`
 - `characters/player/dialog_manager/DialogManager.gd`
 - `tools/verify_export_dialogs.ps1`
+
+## Player Weapon Fixes
+
+- Fixed sabretooth not applying player stats to damage on pickup by updating inventory equipment when picking a weapon up
+
+Main files:
+
+- `characters/player/Player.gd`
 
 ## Steam DLL Removal
 
