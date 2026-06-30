@@ -1,5 +1,47 @@
 # Changelog
 
+## v0.1.8 - 2026-06-28
+
+### Added
+- Added cached world item scene loading for organs and dropped items.
+- Added pooling for gibs and blood particle burst effects.
+- Added pooling for line bullet tracer visuals.
+- Added shared audio stream caching for hit effects and music playback.
+- Added cached inventory, equipped weapon, and hotkey icon texture loading.
+- Added cached colonist and tourist cosmetic resource loading.
+- Added cached NPC `PackedScene` loading for `NPCSpawner.gd`.
+- Added automatic chunked `MultiMesh` batching for repeated static environment meshes.
+- Added a smaller-object static culling tier for very small geometry.
+- Added pooling for homing bullets.
+- Added pooling for beetle bomber missile bugs.
+- Added pooling for TerraWorm rock explosions and flying rocks.
+- Added cached NPC lists for the dynamic NPC render culler.
+- Added short-lived NPC ally alert caches to reduce repeated full-group scans during alert waves.
+
+### Changed
+- World item drops now instance from cached scenes instead of loading item scenes at drop time.
+- Gibs, blood bursts, and line bullet visuals now reuse pooled nodes instead of instancing during combat.
+- Hit effects and music now reuse cached audio streams instead of repeatedly loading by path.
+- Inventory UI now reuses cached item textures when opening inventory or updating equipped/hotkey displays.
+- Colonist and tourist NPC setup now reuses cached cosmetic textures and accessory scenes.
+- NPC spawners now warm their NPC scene list on ready and spawn from cached scenes instead of calling `load(...).instance()` during horde, fog, or triggered spawns.
+- Static environment culler restores are now staggered across frames to avoid visibility restore spikes.
+- Dynamic NPC render culler restores are now staggered across frames to avoid NPC graphics restore spikes.
+- Static environment culling now uses separate smaller, small, and medium object distance tiers.
+- Homing bullets, beetle bomber missiles, rock explosions, and flying rocks now reuse pooled nodes instead of instancing during combat or boss effects.
+- Dynamic NPC render culler now refreshes its NPC group cache periodically instead of scanning the full `npcs` group every culler update.
+- Ally alert propagation now reuses short-lived cached ally candidates and a shared NPC group fallback cache during alert bursts.
+- Eating debug output and stray NPC/boss print spam are now removed or gated behind debug flags.
+
+### Fixed
+- Dead organs loaded from save now apply the dead texture silently instead of emitting decayed.
+- `decay()` now ignores organs already at 0 durability.
+- `set_organ_unusable()` now only emits the decay notification once per item.
+- Fixed picked-up world weapons disappearing in the player's hands after moving away from their original world location.
+- Fixed static environment culler indexing dynamic world items and stale reparented geometry.
+- Fixed pooled flying rocks not moving by restoring physics processing when reused.
+- Fixed a Godot 3 type inference parse issue in dialogue condition checks exposed by pooled rock preloading.
+
 ## v0.1.7 - 2026-06-28
 
 ### Added

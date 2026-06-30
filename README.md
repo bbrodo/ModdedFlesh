@@ -55,6 +55,7 @@ Main files:
 - Increased ally alert and player gunfire alert radii so nearby enemies join ongoing fights more reliably.
 - Fixed NPC vision LOS checks to start from eye height and ignore the NPC's own body/hitboxes, improving Pollop/Wizard and general NPC detection.
 - Fixed NPC shotgun bursts sometimes missing completely at close range by adding one guaranteed center pellet to NPC shotgun spread while keeping the rest of the pellets randomized.
+- Cached NPC group fallback results and short-lived alertable ally candidates so ally alert waves do less repeated full-group scanning.
 
 Main files:
 
@@ -65,6 +66,7 @@ Main files:
 - `characters/npcs/nautilus/Nautilus.gd`
 - `characters/npcs/soldier/Soldier.gd`
 - `characters/VisionManager.gd`
+- `singletons/dynamic_npc_render_culler.gd`
 - `characters/player/Player.tscn`
 - `characters/PredictiveAimLogic.gd`
 - `items/weapons/bullet_emitters/BulletEmitter.gd`
@@ -85,6 +87,11 @@ Main files:
 - Set both culler settings to enabled by default for new settings files.
 - Set shadows to off by default for new settings files because shadows have a large performance cost.
 - Restored hidden geometry, NPC graphics, and shadow state when either culler is disabled.
+- Added automatic chunked `MultiMesh` batching for repeated static environment meshes to reduce draw submissions in dense areas.
+- Added a smaller-object culling tier for very small static geometry, separate from small and medium objects.
+- Staggered static environment and NPC graphics restore work across frames to reduce culler-related visibility spikes.
+- Prevented the static environment culler from indexing world items, weapons, and stale reparented geometry so picked-up weapons do not disappear based on their original world position.
+- Cached the dynamic NPC render culler's NPC list so it no longer scans the full `npcs` group on every culler update.
 
 Main files:
 
@@ -124,20 +131,56 @@ Main files:
 - Cached filtered projectile collision-exclusion bodies so projectiles do not rebuild that list every movement tick.
 - Added pooling support for shared non-bullet projectile lifecycles so blood and acid projectiles can be reused safely.
 - Added pooling for blood hit effects, bullet hit effects, explosions, lightning effects, acid pools, and fire objects to reduce runtime instancing/freeing spikes.
+- Added pooling for gibs, blood particle bursts, and line bullet tracer visuals to reduce death, hit, and firing-time instancing spikes.
+- Added pooling for homing bullets, beetle bomber missile bugs, TerraWorm rock explosions, and flying rocks.
 - Routed biogun elemental effects, lightning hands, acid projectiles, grenade explosions, homing bullet elemental effects, TerraWorm acid, and missile bug explosions through pooled effect paths where applicable.
+- Added audio stream caching for hit effects and music so repeated sounds and tracks reuse loaded streams.
+- Fixed pooled flying rocks not moving by restoring physics processing when reused.
 
 Main files:
 
 - `characters/HealthManager.gd`
+- `effects/gibs/GibSpawner.gd`
+- `effects/gibs/Gib.gd`
+- `effects/BloodParticlesBurst.gd`
 - `items/weapons/projectiles/Projectile.gd`
 - `items/weapons/projectiles/BloodProjectile.gd`
 - `items/weapons/projectiles/Acid.gd`
 - `items/weapons/effects/Explosion.gd`
 - `items/weapons/effects/Lightning.gd`
+- `items/weapons/effects/HitEffect.gd`
+- `items/weapons/effects/LineBullet.gd`
+- `items/weapons/bullet_emitters/HitScanBulletEmitter.gd`
 - `effects/acid_pool/AcidPool.gd`
 - `items/weapons/bullet_emitters/LightningEmitter.gd`
 - `characters/npcs/terraworm/LargeAcidSpawner.gd`
+- `characters/npcs/terraworm/FlyingRockSpawner.gd`
 - `characters/npcs/beetle_bomber/MissileBug.gd`
+- `characters/npcs/beetle_bomber/BeetleBomber.gd`
+- `effects/rock_explosion/RockExplosion.gd`
+- `effects/rock_explosion/FlyingRock.gd`
+- `items/weapons/bullet_emitters/HomingBulletEmitter.gd`
+- `items/weapons/projectiles/HomingBullet.gd`
+- `singletons/MusicManager.gd`
+- `singletons/ObjectPoolManager.gd`
+
+## Runtime Resource Caching
+
+- Cached world item scenes for organs and dropped items so item drops no longer load their scenes at spawn time.
+- Cached inventory, equipped weapon, and hotkey icon textures to reduce UI/equip-time resource loading.
+- Cached colonist and tourist cosmetic textures/accessory scenes so those NPCs do less runtime loading when spawned.
+- Cached NPC `PackedScene` resources in NPC spawners so horde, fog, and triggered NPC spawns no longer call `load(...).instance()` during the spawn path.
+
+Main files:
+
+- `items/ItemDB.gd`
+- `characters/player/inventory/GroundContainer.gd`
+- `characters/player/inventory/ItemUI.gd`
+- `characters/player/EquippedWeaponsInfo.gd`
+- `characters/player/inventory/Hotkeys.gd`
+- `characters/npcs/colonist/Colonist.gd`
+- `characters/npcs/colonist/tourist/Tourist.gd`
+- `utility/NPCSpawner.gd`
 - `singletons/ObjectPoolManager.gd`
 
 ## Grenade Explosion Performance
@@ -162,6 +205,7 @@ Main files:
 - Prevented the eating animation from being restarted every frame while the eat input is held.
 - Guarded bite callbacks so late animation events do not emit healing signals after eating has stopped or health is already full.
 - Made stopping eating idempotent so it no longer replays hold animations or logs every frame when already stopped.
+- Removed eating debug logs so corpse pickup/eating no longer spams the console or log file.
 
 Main file:
 
@@ -171,10 +215,15 @@ Main file:
 
 - Fixed TerraWorm kill zone lookup by using the explicit `Graphics/BoneAttachment tail_0/KillZone` node path.
 - Fixed a crash when killing TerraWorm by making `set_path_to_death_path()` return the expected dictionary data.
+- Pooled TerraWorm rock explosion and flying rock effects to reduce boss-effect instancing spikes.
+- Gated TerraWorm missing-point debug output behind `debug_view`.
 
-Main file:
+Main files:
 
 - `characters/npcs/terraworm/TerraWorm.gd`
+- `characters/npcs/terraworm/FlyingRockSpawner.gd`
+- `effects/rock_explosion/RockExplosion.gd`
+- `effects/rock_explosion/FlyingRock.gd`
 
 ## Dialogue Export Fixes
 
@@ -182,6 +231,7 @@ Main file:
 - Added dialogue path fallback support for both `res://dialog/...` and legacy `res://old_dialog/...` conversation files.
 - Added missing-dialog diagnostics so exported builds report whether the expected dialogue directories/files are present in the packaged `.pck`.
 - Added an export verification script for checking that required dialogue JSON files were packed.
+- Fixed a Godot 3 type inference parse issue in dialogue condition checks.
 - Export presets should include dialogue JSON files through Godot's non-resource include filter.
 
 Main files:
@@ -217,8 +267,12 @@ Main files:
 - Game logger output is written to `user://logs/latest.log`, with the previous run archived as `previous-YYYYMMDD-HHMMSS.log`.
 - Godot engine output is also written to `user://logs/godot.log`.
 - On Windows this uses the shared Wrought Flesh user directory, usually `AppData/Roaming/WroughtFlesh/logs`.
+- Removed or debug-gated stray NPC, boss, laser pointer robot, and eating debug output that could spam logs during normal gameplay.
 
 Main files:
 
 - `singletons/log_config.gd`
 - `project.godot`
+- `characters/player/EatManager.gd`
+- `characters/npcs/tiger_boss/laser_pointer/LaserPointerRobot.gd`
+- `characters/npcs/terraworm/TerraWorm.gd`
