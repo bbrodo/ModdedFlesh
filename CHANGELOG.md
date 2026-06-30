@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.8 - 2026-06-28
+## v0.1.8 - 2026-06-30
 
 ### Added
 - Added cached world item scene loading for organs and dropped items.
